@@ -3,13 +3,13 @@ package bootstrap
 import (
 	"fmt"
 	"github.com/eatmoreapple/openwechat"
-	"github.com/qingconglaixueit/wechatbot/handlers"
-	"github.com/qingconglaixueit/wechatbot/pkg/logger"
+	"github.com/blackmady/chatgpt_wechat_robot/handlers"
+	"github.com/blackmady/chatgpt_wechat_robot/pkg/logger"
 	"os"
 )
 
 func Run() {
-	//bot := openwechat.DefaultBot()
+	// bot := openwechat.DefaultBot()
 	bot := openwechat.DefaultBot(openwechat.Desktop) // 桌面模式，上面登录不上的可以尝试切换这种模式
 
 	// 注册消息处理函数
@@ -24,17 +24,18 @@ func Run() {
 	bot.UUIDCallback = openwechat.PrintlnQrcodeUrl
 
 	// 创建热存储容器对象
-	reloadStorage := openwechat.NewJsonFileHotReloadStorage("storage.json")
+	reloadStorage := openwechat.NewFileHotReloadStorage("storage.json")
+	defer reloadStorage.Close()
 
 	// 执行热登录
-	err = bot.HotLogin(reloadStorage)
+	err = bot.HotLogin(reloadStorage,openwechat.NewRetryLoginOption())
 	if err != nil {
 		if err := os.Remove("storage.json"); err != nil {
 			logger.Warning(fmt.Sprintf("os.Remove storage.json error: %v", err))
 			return
 		}
-		reloadStorage := openwechat.NewJsonFileHotReloadStorage("storage.json")
-		err = bot.HotLogin(reloadStorage)
+		reloadStorage := openwechat.NewFileHotReloadStorage("storage.json")
+		err = bot.HotLogin(reloadStorage,openwechat.NewRetryLoginOption())
 		if err != nil {
 			logger.Warning(fmt.Sprintf("bot.HotLogin error: %v", err))
 			return

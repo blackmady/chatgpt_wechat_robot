@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/patrickmn/go-cache"
-	"github.com/qingconglaixueit/wechatbot/config"
-	"github.com/qingconglaixueit/wechatbot/pkg/logger"
+	"github.com/blackmady/chatgpt_wechat_robot/config"
+	"github.com/blackmady/chatgpt_wechat_robot/pkg/logger"
 	"github.com/skip2/go-qrcode"
 	"log"
 	"runtime"
@@ -67,5 +67,6 @@ func NewHandler() (msgFunc func(msg *openwechat.Message), err error) {
 	dispatcher.RegisterHandler(func(message *openwechat.Message) bool {
 		return !(strings.Contains(message.Content, config.LoadConfig().SessionClearToken) || message.IsSendByGroup() || message.IsFriendAdd())
 	}, UserMessageContextHandler())
-	return openwechat.DispatchMessage(dispatcher), nil
+	// return openwechat.DispatchMessage(dispatcher), nil
+	return dispatcher.AsMessageHandler(),nil
 }

@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/eatmoreapple/openwechat"
-	"github.com/qingconglaixueit/wechatbot/gpt"
-	"github.com/qingconglaixueit/wechatbot/pkg/logger"
-	"github.com/qingconglaixueit/wechatbot/service"
+	"github.com/blackmady/chatgpt_wechat_robot/gpt"
+	"github.com/blackmady/chatgpt_wechat_robot/pkg/logger"
+	"github.com/blackmady/chatgpt_wechat_robot/service"
 )
 
 var _ MessageHandlerInterface = (*GroupMessageHandler)(nil)
@@ -61,7 +61,7 @@ func NewGroupMessageHandler(msg *openwechat.Message) (MessageHandlerInterface, e
 
 	userService := service.NewUserService(c, groupSender)
 	handler := &GroupMessageHandler{
-		self:    sender.Self,
+		self:    sender.Self(),
 		msg:     msg,
 		group:   group,
 		sender:  groupSender,

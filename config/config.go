@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qingconglaixueit/wechatbot/pkg/logger"
+	"github.com/blackmady/chatgpt_wechat_robot/pkg/logger"
 )
 
 // Configuration 项目配置

@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qingconglaixueit/wechatbot/config"
+	"github.com/blackmady/chatgpt_wechat_robot/config"
 )
 
 // ChatGPTResponseBody 请求体
@@ -19,7 +19,7 @@ type ChatGPTResponseBody struct {
 	Object  string                 `json:"object"`
 	Created int                    `json:"created"`
 	Model   string                 `json:"model"`
-	Choices []ChoiceItem           `json:"choices"`
+	Choices []ChoiceItemGPT           `json:"choices"`
 	Usage   map[string]interface{} `json:"usage"`
 	Error   struct {
 		Message string      `json:"message"`
@@ -36,10 +36,23 @@ type ChoiceItem struct {
 	FinishReason string `json:"finish_reason"`
 }
 
+
+type ChoiceItemGPT struct {
+	Message	  ChatMessage `json:"message"`
+	FinishReason string `json:"finish_reason"`
+	Index		int `json:"index"`
+}
+
+type ChatMessage struct {
+	Role		string `json:"role"`
+	Content  	string `json:"content"`
+}
+
 // ChatGPTRequestBody 响应体
 type ChatGPTRequestBody struct {
 	Model            string  `json:"model"`
-	Prompt           string  `json:"prompt"`
+	// Prompt           string  `json:"prompt"`
+	Messages 		 []ChatMessage	`json:"messages"`
 	MaxTokens        uint    `json:"max_tokens"`
 	Temperature      float64 `json:"temperature"`
 	TopP             int     `json:"top_p"`
@@ -48,6 +61,7 @@ type ChatGPTRequestBody struct {
 }
 
 // Completions gtp文本模型回复
+//curl https://api.openai.com/v1/chat/completions  ->GPT3.5 接口地址
 //curl https://api.openai.com/v1/completions
 //-H "Content-Type: application/json"
 //-H "Authorization: Bearer your chatGPT key"
@@ -73,7 +87,7 @@ func Completions(msg string) (string, error) {
 	}
 	var reply string
 	if gptResponseBody != nil && len(gptResponseBody.Choices) > 0 {
-		reply = gptResponseBody.Choices[0].Text
+		reply = gptResponseBody.Choices[0].Message.Content
 	}
 	return reply, nil
 }
@@ -84,9 +98,16 @@ func httpRequestCompletions(msg string, runtimes int) (*ChatGPTResponseBody, err
 		return nil, errors.New("api key required")
 	}
 
+	message:=ChatMessage{
+		Role: "user",
+		Content:msg,
+	}
+	messages:=[]ChatMessage{message}
+
 	requestBody := ChatGPTRequestBody{
 		Model:            cfg.Model,
-		Prompt:           msg,
+		// Prompt:           msg,
+		Messages:		  messages,
 		MaxTokens:        cfg.MaxTokens,
 		Temperature:      cfg.Temperature,
 		TopP:             1,
@@ -100,7 +121,7 @@ func httpRequestCompletions(msg string, runtimes int) (*ChatGPTResponseBody, err
 
 	log.Printf("gpt request(%d) json: %s\n", runtimes, string(requestData))
 
-	req, err := http.NewRequest(http.MethodPost, "https://api.openai.com/v1/completions", bytes.NewBuffer(requestData))
+	req, err := http.NewRequest(http.MethodPost, "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(requestData))
 	if err != nil {
 		return nil, fmt.Errorf("http.NewRequest error: %v", err)
 	}

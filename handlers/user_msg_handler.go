@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/eatmoreapple/openwechat"
-	"github.com/qingconglaixueit/wechatbot/config"
-	"github.com/qingconglaixueit/wechatbot/gpt"
-	"github.com/qingconglaixueit/wechatbot/pkg/logger"
-	"github.com/qingconglaixueit/wechatbot/service"
+	"github.com/blackmady/chatgpt_wechat_robot/config"
+	"github.com/blackmady/chatgpt_wechat_robot/gpt"
+	"github.com/blackmady/chatgpt_wechat_robot/pkg/logger"
+	"github.com/blackmady/chatgpt_wechat_robot/service"
 )
 
 var _ MessageHandlerInterface = (*UserMessageHandler)(nil)
